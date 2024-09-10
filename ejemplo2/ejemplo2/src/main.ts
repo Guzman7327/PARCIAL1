@@ -1,59 +1,68 @@
 import './style.css';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
-import { setupCounter } from './counter.ts';
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <h1>Hola</h1>
-  <div>
-    <input id="identificacion" placeholder="Ingrese su identificación" />
-    <select id="tipoIdentificacion">
-      <option value="cedula">Cédula</option>
-      <option value="rucPersonaNatural">RUC Persona Natural</option>
-      <option value="rucSociedadPrivada">RUC Sociedad Privada</option>
-      <option value="rucSociedadPublica">RUC Sociedad Pública</option>
-    </select>
-    <button id="validar">Validar</button>
-    <p id="resultado"></p>
-  </div>
+  <label for="txtidentificacion">Identificación del usuario:</label>
+  <input type="text" id="txtidentificacion" value="1316055795"/>
+  <div id="estado"></div>
+  <button id="btnvalidar">Validar</button>
 `;
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
+const txtidentificacion = document.querySelector<HTMLInputElement>('#txtidentificacion')!;
+const btnvalidar = document.querySelector<HTMLButtonElement>('#btnvalidar')!;
+const estado = document.querySelector<HTMLDivElement>('#estado')!;
 
-function validarIdentificacion(identificacion: string, tipo: 'cedula' | 'rucSociedadPrivada' | 'rucSociedadPublica' | 'rucPersonaNatural'): boolean {
-  if (!/^\d{10,13}$/.test(identificacion)) {
-    return false; // Verifica que la identificación tenga entre 10 y 13 dígitos numéricos
+// Función para validar identificación
+function validarIdentificacion(identificacion: string, coeficiente: string): string {
+  if (identificacion.length !== coeficiente.length + 1) {
+    return "La identificación debe tener " + (coeficiente.length + 1) + " dígitos.";
   }
 
-  const coeficiente: number[] = tipo === 'cedula' || tipo === 'rucPersonaNatural'
-    ? [2, 1, 2, 1, 2, 1, 2, 1, 2]
-    : tipo === 'rucSociedadPrivada'
-    ? [4, 3, 2, 7, 6, 5, 4, 3, 2]
-    : [3, 2, 7, 6, 5, 4, 3, 2, 1]; // Coeficientes para los diferentes tipos de identificación
-
-  let suma = 0;
+  let acumulador = 0;
 
   for (let i = 0; i < coeficiente.length; i++) {
-    let valor = parseInt(identificacion[i]) * coeficiente[i];
-    if (tipo === 'cedula' || tipo === 'rucPersonaNatural') {
-      if (valor >= 10) valor -= 9;
+    let numeroAAcumular = parseInt(identificacion[i]) * parseInt(coeficiente[i]);
+    if (numeroAAcumular > 9) {
+      numeroAAcumular -= 9;
     }
-    suma += valor;
+    acumulador += numeroAAcumular;
   }
 
-  const ultimoDigito = parseInt(identificacion[identificacion.length - 1]);
-  const modulo = suma % 10;
-  const digitoVerificador = modulo === 0 ? 0 : 10 - modulo;
+  const residuo = 10 - acumulador % 10;
+  const digitoVerificador = (residuo === 10) ? 0 : residuo;
 
-  return digitoVerificador === ultimoDigito;
+  return digitoVerificador === parseInt(identificacion[coeficiente.length])
+    ? "Identificación válida"
+    : "Identificación inválida";
 }
 
-document.querySelector<HTMLButtonElement>('#validar')!.addEventListener('click', () => {
-  const identificacion = (document.querySelector<HTMLInputElement>('#identificacion')!).value;
-  const tipoIdentificacion = (document.querySelector<HTMLSelectElement>('#tipoIdentificacion')!).value as 'cedula' | 'rucSociedadPrivada' | 'rucSociedadPublica' | 'rucPersonaNatural';
-  
-  const esValida = validarIdentificacion(identificacion, tipoIdentificacion);
-  
-  const resultado = document.querySelector<HTMLParagraphElement>('#resultado')!;
-  resultado.textContent = esValida ? 'Identificación válida' : 'Identificación inválida';
-});
+const cedulaCoeficiente = "212121212"; // Coeficiente para cédula de ciudadanía
+const rucPrivadoCoeficiente = "212121212"; // Coeficiente para R.U.C. sociedades privadas
+const rucPublicoCoeficiente = "432765432"; // Coeficiente para R.U.C. sociedades públicas
+const rucNaturalCoeficiente = "212121212"; // Coeficiente para R.U.C. persona natural
+
+btnvalidar.onclick = () => {
+  const identificacion = txtidentificacion.value;
+  let coeficiente;
+
+  // Determinar el tipo de identificación y su coeficiente
+  if (identificacion.length === 10) {
+    coeficiente = cedulaCoeficiente; // Cédula
+  } else if (identificacion.length === 13) {
+    if (identificacion.startsWith("09")) {
+      coeficiente = rucPrivadoCoeficiente; // R.U.C. privado
+    } else {
+      coeficiente = rucPublicoCoeficiente; // R.U.C. público
+    }
+  } else {
+    estado.innerHTML = "Formato de identificación no reconocido.";
+    estado.style.color = 'red';
+    return;
+  }
+
+  const resultado = validarIdentificacion(identificacion, coeficiente);
+  estado.innerHTML = resultado;
+  estado.style.color = resultado.includes("válida") ? 'green' : 'red';
+};
+
+// Mensaje en la consola para confirmar que el script se ejecuta correctamente
+console.log('Aplicación de validación de identificación en ejecución.');
