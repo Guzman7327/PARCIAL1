@@ -1,0 +1,26 @@
+<h2>Gestión de Cursos</h2>
+
+<!-- Formulario para agregar un nuevo curso -->
+<div>
+  <h3>Agregar Curso</h3>
+  <input [(ngModel)]="nuevoCurso.descripcion" placeholder="Descripción" />
+  <input [(ngModel)]="nuevoCurso.fechaInicio" type="date" />
+  <button (click)="agregarCurso()">Agregar</button>
+</div>
+
+<!-- Lista de cursos -->
+<div *ngFor="let curso of cursos">
+  <h3>{{ curso.descripcion }}</h3>
+  <p>Fecha de inicio: {{ curso.fechaInicio | date }}</p>
+  <button (click)="editarCurso(curso)">Editar</button>
+  <button (click)="eliminarCurso(curso.id, curso._rev)">Eliminar</button>
+
+  <!-- Formulario de edición -->
+  <div *ngIf="editandoCurso && editandoCurso.id === curso.id">
+    <h3>Editar Curso</h3>
+    <input [(ngModel)]="editandoCurso.descripcion" placeholder="Descripción" />
+    <input [(ngModel)]="editandoCurso.fechaInicio" type="date" />
+    <button (click)="actualizarCurso()">Guardar</button>
+    <button (click)="cancelarEdicion()">Cancelar</button>
+  </div>
+</div>

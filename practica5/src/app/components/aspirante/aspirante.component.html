@@ -1,0 +1,26 @@
+<h2>Gestión de Aspirantes</h2>
+
+<!-- Formulario para agregar un nuevo aspirante -->
+<div>
+  <h3>Agregar Aspirante</h3>
+  <input [(ngModel)]="nuevoAspirante.nombre" placeholder="Nombre" />
+  <input [(ngModel)]="nuevoAspirante.identificacion" placeholder="Identificación" />
+  <button (click)="agregarAspirante()">Agregar</button>
+</div>
+
+<!-- Lista de aspirantes -->
+<div *ngFor="let aspirante of aspirantes">
+  <h3>{{ aspirante.nombre }}</h3>
+  <p>Identificación: {{ aspirante.identificacion }}</p>
+  <button (click)="editarAspirante(aspirante)">Editar</button>
+  <button (click)="eliminarAspirante(aspirante.id, aspirante._rev)">Eliminar</button>
+
+  <!-- Formulario de edición -->
+  <div *ngIf="editandoAspirante && editandoAspirante.id === aspirante.id">
+    <h3>Editar Aspirante</h3>
+    <input [(ngModel)]="editandoAspirante.nombre" placeholder="Nombre" />
+    <input [(ngModel)]="editandoAspirante.identificacion" placeholder="Identificación" />
+    <button (click)="actualizarAspirante()">Guardar</button>
+    <button (click)="cancelarEdicion()">Cancelar</button>
+  </div>
+</div>

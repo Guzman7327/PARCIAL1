@@ -1,0 +1,33 @@
+<h2>Gestión de Inscripciones</h2>
+
+<!-- Formulario para agregar una nueva inscripción -->
+<div>
+  <h3>Agregar Inscripción</h3>
+  <input [(ngModel)]="nuevaInscripcion.idCurso" placeholder="ID del Curso" />
+  <input [(ngModel)]="nuevaInscripcion.idAspirante" placeholder="ID del Aspirante" />
+  <input [(ngModel)]="nuevaInscripcion.fecha" type="date" placeholder="Fecha" />
+  <input [(ngModel)]="nuevaInscripcion.hora" placeholder="Hora" />
+  <input [(ngModel)]="nuevaInscripcion.valorCancelado" type="number" placeholder="Valor Cancelado" />
+  <button (click)="agregarInscripcion()">Agregar</button>
+</div>
+
+<!-- Lista de inscripciones -->
+<div *ngFor="let inscripcion of inscripciones">
+  <h3>ID del Curso: {{ inscripcion.idCurso }} | ID del Aspirante: {{ inscripcion.idAspirante }}</h3>
+  <p>Fecha: {{ inscripcion.fecha | date }} | Hora: {{ inscripcion.hora }}</p>
+  <p>Valor Cancelado: {{ inscripcion.valorCancelado }}</p>
+  <button (click)="editarInscripcion(inscripcion)">Editar</button>
+  <button (click)="eliminarInscripcion(inscripcion.id, inscripcion._rev)">Eliminar</button>
+
+  <!-- Formulario de edición -->
+  <div *ngIf="editandoInscripcion && editandoInscripcion.id === inscripcion.id">
+    <h3>Editar Inscripción</h3>
+    <input [(ngModel)]="editandoInscripcion.idCurso" placeholder="ID del Curso" />
+    <input [(ngModel)]="editandoInscripcion.idAspirante" placeholder="ID del Aspirante" />
+    <input [(ngModel)]="editandoInscripcion.fecha" type="date" placeholder="Fecha" />
+    <input [(ngModel)]="editandoInscripcion.hora" placeholder="Hora" />
+    <input [(ngModel)]="editandoInscripcion.valorCancelado" type="number" placeholder="Valor Cancelado" />
+    <button (click)="actualizarInscripcion()">Guardar</button>
+    <button (click)="cancelarEdicion()">Cancelar</button>
+  </div>
+</div>
